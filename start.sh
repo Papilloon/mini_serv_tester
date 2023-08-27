@@ -41,6 +41,7 @@ else
 fi
 
 echo -e -n "🚀 Lancement du testeur :"
+
 execoutput=$(./tester $Port)
 
 if [[ "$execoutput" =~ .*"ERROR ARGS".* ]]; then

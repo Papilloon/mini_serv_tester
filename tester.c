@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tester.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrienmori <adrienmori@student.42.fr>      +#+  +:+       +#+        */
+/*   By: amori <amori@student.42perpignan.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/27 16:15:59 by adrienmori        #+#    #+#             */
-/*   Updated: 2023/08/27 19:28:54 by adrienmori       ###   ########.fr       */
+/*   Created: 2023/08/27 16:16:36 by amori             #+#    #+#             */
+/*   Updated: 2023/08/27 19:47:12 by amori            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int	main(int argc, char **argv)
 	addr.sin_port = htons(atoi(argv[1]));
 	addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
-	sleep(2);
+	sleep(1);
 
 	if (connect(server_socket, (const struct sockaddr *)&addr, sizeof(addr)) == -1)
 		return (printf("ERROR CONNECT\n"), 1);
