@@ -6,7 +6,7 @@
 /*   By: amori <amori@student.42perpignan.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 16:16:36 by amori             #+#    #+#             */
-/*   Updated: 2023/08/27 19:47:12 by amori            ###   ########.fr       */
+/*   Updated: 2023/08/27 19:51:12 by amori            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int	main(int argc, char **argv)
 	}
 	sleep(1);
 
-	int file = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644); // Ouvrir ou créer le fichier en écriture
+	int file = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (file == -1)
 		return (printf("ERROR FILE"), 1);
 
