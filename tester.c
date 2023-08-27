@@ -6,7 +6,7 @@
 /*   By: adrienmori <adrienmori@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 16:15:59 by adrienmori        #+#    #+#             */
-/*   Updated: 2023/08/27 17:54:19 by adrienmori       ###   ########.fr       */
+/*   Updated: 2023/08/27 19:28:54 by adrienmori       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,11 @@ int	tester(int port)
 	send_to_socket(2, "Je suis client 2\n"); usleep(10000);
 	send_to_socket(3, "Je suis client 3\n"); usleep(10000);
 	send_to_socket(4, "Je suis client 4\n"); usleep(10000);
-	send_to_socket(5, "Je suis client 5\n"); usleep(10000);
+	send_to_socket(5, "Je suis client 5\n\n"); usleep(10000);
 
 	send_to_socket(1, "Je n'ai pas de retour a la ligne");
 	send_to_socket(1, " Et j'en ajoute un ici\n");
-	send_to_socket(1, "J'ai\nPlusieurs\nretour\na\nla\nligne\n");  usleep(10000);
+	send_to_socket(1, "J'ai\nPlusieurs\nretour\na\nla\nligne\n\n");  usleep(10000);
 
 	send_to_socket(1, "J'ecris sans endline avant de me deconnecter");  usleep(10000);
 
@@ -59,16 +59,16 @@ int	tester(int port)
 	open_socket(6, port);  usleep(10000);
 	open_socket(7, port);  usleep(10000);
 
-	send_to_socket(6, "Je suis client 6\n");  usleep(10000);
+	send_to_socket(6, "\nJe suis client 6\n");  usleep(10000);
 	send_to_socket(7, "Je suis client 7\n");  usleep(10000);
 
-	send_to_socket(2, "Je suis client 2 et je fonctionne toujours\n");  usleep(10000);
+	send_to_socket(2, "\nJe suis client 2 et je fonctionne toujours\n");  usleep(10000);
 	send_to_socket(4, "Je suis client 4 et je fonctionne toujours\n");  usleep(10000);
 
-	send_to_socket(6, "Je suis un texte de 10000 characteres pour tester le buffer : ");  usleep(10000);
+	send_to_socket(6, "\nJe suis un texte de 10000 characteres pour tester le buffer : ");  usleep(10000);
 	for (int i = 0;  i < 278; i++)
 		send_to_socket(6, "1234567890abcdefghijklmnopqrstuvwxyz");
-	send_to_socket(6, "\n");  usleep(10000);
+	send_to_socket(6, "\n\n");  usleep(10000);
 
 	close_socket(2);  usleep(10000);
 	close_socket(4);  usleep(10000);
@@ -81,15 +81,26 @@ int	tester(int port)
 int	main(int argc, char **argv)
 {
 	if (argc < 2)
-		return (printf("erreur: ./tester [port]\n"), 1);
+		return (printf("ERROR ARGS\n"), 1);
+
+	int pid_serv = fork();
+	if (!pid_serv)
+	{
+		dup2(1, 2);
+		argv[0] = "./mini_serv";
+		execve("./mini_serv", argv, NULL);
+		exit(0);
+		return (0);
+	}
+	sleep(1);
 
 	int file = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644); // Ouvrir ou créer le fichier en écriture
 	if (file == -1)
-		return (printf("erreur: lors de l'ouverture du fichier"), 1);
+		return (printf("ERROR FILE"), 1);
 
 	int	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
-		return (printf("erreur: connexion impossible\n"), 1);
+		return (printf("ERROR CONNECT\n"), 1);
 
 	struct sockaddr_in	addr;
 
@@ -97,20 +108,22 @@ int	main(int argc, char **argv)
 	addr.sin_port = htons(atoi(argv[1]));
 	addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
+	sleep(2);
+
 	if (connect(server_socket, (const struct sockaddr *)&addr, sizeof(addr)) == -1)
-		return (printf("erreur: connect impossible\n"), 1);
+		return (printf("ERROR CONNECT\n"), 1);
 
 	bzero(clients, sizeof(clients));
 
 	int pid = fork();
 
-	if (!pid)
+	if (pid)
 	{
 		tester(atoi(argv[1]));
+		printf("OK\n");
 		kill(pid, SIGKILL);
-//		close(server_socket);
+		kill(pid_serv, SIGKILL);
 		close(file);
-		exit(0);
 	}
 	else
 	{
@@ -122,7 +135,7 @@ int	main(int argc, char **argv)
 		}
 
 		if (bytesRead < 0) {
-			perror("Erreur lors de la réception des données");
+			perror("ERROR READ");
 		}
 
 		close(server_socket);
